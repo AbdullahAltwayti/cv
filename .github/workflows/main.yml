@@ -24,15 +24,24 @@ jobs:
     - name: Build the project
       run: npm run build
 
+    - name: Install GitHub CLI
+      run: |
+        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+        sudo apt-add-repository https://cli.github.com/packages
+        sudo apt update
+        sudo apt install gh
+
+    - name: Check for ongoing deployments
+      id: check
+      run: |
+        ongoing_deployments=$(gh api repos/${{ github.repository }}/actions/runs --jq '.workflow_runs[] | select(.status=="in_progress") | select(.name=="Build and Deploy") | .id')
+        if [ -n "$ongoing_deployments" ]; then
+          echo "There are ongoing deployments: $ongoing_deployments"
+          exit 1
+        fi
+
     - name: Deploy to GitHub Pages
+      if: success() && steps.check.outputs.deployments == ''
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-      continue-on-error: true
-
-    - name: Retry Deployment
-      if: failure()
-      run: |
-        echo "Deployment failed, retrying..."
-        sleep 30
-        exit 1
