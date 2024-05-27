@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '14' # يمكنك تعديل نسخة Node.js هنا
+        node-version: '14'
 
     - name: Install dependencies
       run: npm install -f
@@ -28,3 +28,11 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+      continue-on-error: true
+
+    - name: Retry Deployment
+      if: failure()
+      run: |
+        echo "Deployment failed, retrying..."
+        sleep 30
+        exit 1
