@@ -33,7 +33,8 @@ jobs:
         sudo apt-get install gh -y
 
     - name: Check for ongoing deployments
-      id: check
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         ongoing_deployments=$(gh api repos/${{ github.repository }}/actions/runs --jq '.workflow_runs[] | select(.status=="in_progress") | select(.name=="Build and Deploy") | .id')
         if [ -n "$ongoing_deployments" ]; then
