@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '14'
+        node-version: '14' # يمكنك تعديل نسخة Node.js هنا
 
     - name: Install dependencies
       run: npm install -f
@@ -24,26 +24,8 @@ jobs:
     - name: Build the project
       run: npm run build
 
-    - name: Install GitHub CLI
-      run: |
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt-get update
-        sudo apt-get install gh -y
-
-    - name: Check for ongoing deployments
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        ongoing_deployments=$(gh api repos/${{ github.repository }}/actions/runs --jq '.workflow_runs[] | select(.status=="in_progress") | select(.name=="Build and Deploy") | .id')
-        if [ -n "$ongoing_deployments" ]; then
-          echo "There are ongoing deployments: $ongoing_deployments"
-          exit 1
-        fi
-
     - name: Deploy to GitHub Pages
-      if: success() && steps.check.outputs.deployments == ''
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build # قم بتعديل هذا المسار إذا كان الناتج في مجلد آخر
