@@ -18,19 +18,21 @@ jobs:
         with:
           node-version: '14' # يمكنك تعديل نسخة Node.js هنا
 
-      - name: Clean build directory
-        run: rm -rf ./build
-
       - name: Install dependencies
         run: npm install -f
 
       - name: Build the project
         run: npm run build
 
-      - name: List build directory (debug step)
-        run: ls -al ./build
+      - name: Debug build directory
+        run: |
+          echo "Contents of the root directory:"
+          ls -al
+          echo "Contents of the build directory:"
+          ls -al ./build || echo "Build directory not found"
 
       - name: Deploy to GitHub Pages
+        if: success()
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
