@@ -1353,19 +1353,6 @@ video {
 .animate-ping {
   animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
-@keyframes scrollY {
-
-  from {
-    transform: translateY(0);
-  }
-
-  to {
-    transform: translateY(calc(-100% - 1rem));
-  }
-}
-.animate-scrollY {
-  animation: scrollY 10s linear infinite;
-}
 @keyframes spin {
 
   to {
